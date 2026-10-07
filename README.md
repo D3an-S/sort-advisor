@@ -11,13 +11,14 @@ Built as a student project at DHBW. The core idea: there is no single best sorti
 - Explains each recommendation
 
 ## Getting started
-git clone https://github.com/<user>/sort-advisor.git
+```
+git clone 
 cd sort-advisor
 python -m venv .venv
-.venv\Scripts\activate        # macOS/Linux: source .venv/bin/activate
+.venv\Scripts\activate  
 pip install -r requirements.txt
 streamlit run app.py
-
+```
 ## Project structure
 | File | Purpose |
 |------|---------|
