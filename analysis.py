@@ -13,7 +13,7 @@ def sortedness(values):
     for i in range(length(values)-1):
         if values[i] <= values[i+1]:
             counter += 1
-    return counter / length(values)-1
+    return counter / (length(values)-1)
 
 
 def duplicates(values): 
