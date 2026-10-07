@@ -12,7 +12,7 @@ Built as a student project at DHBW. The core idea: there is no single best sorti
 
 ## Getting started
 ```
-git clone 
+git clone https://github.com/DeanS-carthago/sort-advisor.git
 cd sort-advisor
 python -m venv .venv
 .venv\Scripts\activate  
