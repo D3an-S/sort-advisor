@@ -34,10 +34,13 @@ if file is not None:
     if null_count:
         st.info(f"{null_count} leere Werte ignoriert und beim Sortieren ans Ende gestellt.")
 
-    features = analyze(values)
+    if st.button("Analyse starten", type="primary", icon=":material/play_arrow:"):
+        with st.spinner("Analyse läuft..."):
+            features = analyze(values)
+        st.success("Analyse abgeschlossen!")
 
-    st.subheader("Eigenschaften der Daten")
-    werte, sortiert, duplikate = st.columns(3)
-    werte.metric("Anzahl Werte", features["n"])
-    sortiert.metric("Vorsortiert", f"{features['sortedness']:.0%}")
-    duplikate.metric("Duplikate", f"{features['duplicate_ratio']:.0%}")
+        st.subheader("Eigenschaften der Daten")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Anzahl Werte", features["n"])
+        c2.metric("Vorsortiert", f"{features['sortedness']:.0%}")
+        c3.metric("Duplikate", f"{features['duplicate_ratio']:.0%}")
