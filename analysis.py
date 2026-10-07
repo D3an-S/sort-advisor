@@ -22,7 +22,7 @@ def duplicates(values):
         return 1 - len(set(values)) / len(values)
 
 
-def analysis(values):
+def analyze(values):
     return {
         "n": len(values),
         "sortedness": sortedness(values),

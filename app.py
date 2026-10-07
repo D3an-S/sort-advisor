@@ -1,5 +1,8 @@
 import streamlit as st 
 import pandas as pd
+from analysis import analyze
+
+st.set_page_config(page_title="Sort Advisor", page_icon=":material/filter_list:", layout="wide")
 
 st.title("Sort Advisor")
 
@@ -18,8 +21,8 @@ if file is not None:
         st.warning("Die Datei enthält keine Daten.")
         st.stop()
 
-
-    st.dataframe(df.head())
+    with st.expander("Datenvorschau"):
+        st.dataframe(df.head())
 
     column = st.selectbox("Spalte", df.columns)
 
@@ -31,3 +34,10 @@ if file is not None:
     if null_count:
         st.info(f"{null_count} leere Werte ignoriert und beim Sortieren ans Ende gestellt.")
 
+    features = analyze(values)
+
+    st.subheader("Eigenschaften der Daten")
+    werte, sortiert, duplikate = st.columns(3)
+    werte.metric("Anzahl Werte", features["n"])
+    sortiert.metric("Vorsortiert", f"{features['sortedness']:.0%}")
+    duplikate.metric("Duplikate", f"{features['duplicate_ratio']:.0%}")
