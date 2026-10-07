@@ -8,11 +8,12 @@ def length(values):
 def sortedness(values):
     if length(values) < 2: 
         return 1.0
-    else: 
-        for i in range(length(values)-1):
-            if values[i] <= values[i+1]:
-                counter += 1
-            return counter / length(values)-1
+
+    counter = 0
+    for i in range(length(values)-1):
+        if values[i] <= values[i+1]:
+            counter += 1
+    return counter / length(values)-1
 
 
 def duplicates(values): 
