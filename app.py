@@ -1,6 +1,7 @@
 import streamlit as st 
 import pandas as pd
 from analysis import analyze
+from rules import recommend, INV_THRESHOLD
 import time
 from sorting import ALGORITHMS
 
@@ -50,12 +51,46 @@ if file is not None:
         st.success("Analyse abgeschlossen!")
 
         st.subheader("Eigenschaften der Daten")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Anzahl Werte", features["n"])
-        c2.metric("Vorsortiert", f"{features['sortedness']:.0%}")
-        c3.metric("Duplikate", f"{features['duplicate_ratio']:.0%}")
+        def pct(x):
+            return "–" if x is None else f"{x:.0%}"
 
-        # Hier kommt später die Empfehlung aus rules.py hin
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Anzahl Werte", f"{features['n']:,}".replace(",", "."))
+        c2.metric("Vorsortiert", pct(features["sortedness"]),
+                  help="Anteil der Nachbarpaare in richtiger Reihenfolge. "
+                       f"Entspricht {features['runs']} aufsteigenden Runs.")
+        c3.metric("Inversionen", pct(features["inversion_ratio"]),
+                  help="Anteil falsch geordneter Paare (0 % = sortiert, 100 % = umgekehrt). "
+                       "Insertion Sort braucht genau so viele Verschiebungen, wie es Inversionen gibt.")
+        c4.metric("Duplikate", pct(features["duplicate_ratio"]))
+
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Datentyp", "Zahl" if features["is_numeric"]
+                  else "Text" if features["is_comparable"] else "gemischt")
+        c2.metric("Runs", "–" if features["runs"] is None
+                  else f"{features['runs']:,}".replace(",", "."),
+                  help="Anzahl aufsteigender Teilstücke (Mannila 1985). "
+                       "1 = komplett sortiert. Lässt sich aus „Vorsortiert“ umrechnen: "
+                       "Runs = (n − 1) · (1 − Vorsortiert) + 1.")
+        c3.metric("Inversionen absolut", "–" if features["inversions"] is None
+                  else f"{features['inversions']:,}".replace(",", "."),
+                  help="Anzahl Paare, die falsch herum stehen. "
+                       "Entspricht genau der Zahl der Verschiebungen bei Insertion Sort.")
+        c4.metric("Inv / (n · log₂ n)", "–" if features["inv_per_nlogn"] is None
+                  else f"{features['inv_per_nlogn']:.2f}".replace(".", ","),
+                  help=f"Entscheidet über die Insertion-Regel: bis {INV_THRESHOLD} "
+                       f"(gemessene Schwelle) wird Insertion Sort empfohlen.")
+
+        st.subheader("Empfehlung")
+        rec = recommend(features, need_stable=need_stable, low_memory=low_memory)
+        if rec["algorithm"] is None:
+            st.warning(rec["reasons"][0])
+        else:
+            st.success(f"**{rec['algorithm']}**")
+            for reason in rec["reasons"]:
+                st.write(reason)
+            for note in rec["notes"]:
+                st.caption(note)
 
         st.divider()
         if st.button("Live-Vergleich starten", icon=":material/timer:"):
@@ -63,7 +98,10 @@ if file is not None:
             skipped = []
             with st.spinner("Algorithmen laufen..."):
                 for name, sort_fn in ALGORITHMS.items():
-                    if name == "Insertion Sort" and len(values) > 5000:
+                    # Insertion nur überspringen, wenn es nicht empfohlen ist,
+                    # sonst ließe sich die Empfehlung nicht überprüfen
+                    if (name == "Insertion Sort" and len(values) > 5000
+                            and rec["algorithm"] != "Insertion Sort"):
                         skipped.append(name)
                         continue
                     start = time.perf_counter()
