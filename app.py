@@ -60,8 +60,12 @@ if file is not None:
         st.divider()
         if st.button("Live-Vergleich starten", icon=":material/timer:"):
             results = {}
+            skipped = []
             with st.spinner("Algorithmen laufen..."):
                 for name, sort_fn in ALGORITHMS.items():
+                    if name == "Insertion Sort" and len(values) > 5000:
+                        skipped.append(name)
+                        continue
                     start = time.perf_counter()
                     sort_fn(values)
                     results[name] = (time.perf_counter() - start) * 1000
@@ -70,4 +74,6 @@ if file is not None:
             st.bar_chart(pd.Series(results))
             fastest = min(results, key=results.get)
             st.write(f"Am schnellsten: **{fastest}** ({results[fastest]:.1f} ms)")
+            if skipped:
+                st.caption(f"{', '.join(skipped)} übersprungen: bei mehr als 5.000 Werten zu langsam (O(n²)).")
    
