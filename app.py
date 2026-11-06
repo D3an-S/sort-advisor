@@ -85,7 +85,7 @@ if file is not None:
         rec = recommend(features, need_stable=need_stable, low_memory=low_memory)
         if rec["algorithm"] is None:
             st.warning(rec["reasons"][0])
-            st.stop
+            st.stop()
         else:
             st.success(f"**{rec['algorithm']}**")
             for reason in rec["reasons"]:
