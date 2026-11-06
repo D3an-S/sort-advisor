@@ -2,4 +2,4 @@
 maxUploadSize = 5
 
 [client]
-showErrorDetails = none
+showErrorDetails = "none"
