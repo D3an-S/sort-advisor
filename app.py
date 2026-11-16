@@ -30,7 +30,7 @@ if file is not None:
     column = st.selectbox("Spalte", df.columns)
 
 
-    options = st.pills("Anforderungen an den Algortihmus", ["Stabilität notwendig", "Speicher knapp"], selection_mode="multi")
+    options = st.pills("Anforderungen an den Algorithmus", ["Stabilität notwendig", "Speicher knapp"], selection_mode="multi")
     need_stable = "Stabilität notwendig" in options
     low_memory = "Speicher knapp" in options
 
@@ -40,7 +40,7 @@ if file is not None:
     values = col.dropna().tolist()
 
     if null_count:
-        st.info(f"{null_count} leere Werte ignoriert und beim Sortieren ans Ende gestellt.")
+        st.info(f"{null_count} leere Werte wurden entfernt und nicht mit analysiert.")
 
     if st.button("Analyse starten", type="primary", icon=":material/play_arrow:"):
         st.session_state.analyzed_column = column
