@@ -30,7 +30,7 @@ if file is not None:
     column = st.selectbox("Spalte", df.columns)
 
 
-    options = st.pills("Anforderungen an den Algortihmus", ["Stabilität notwendig", "Speicher knapp"], selection_mode="multi")
+    options = st.pills("Anforderungen an den Algorithmus", ["Stabilität notwendig", "Speicher knapp"], selection_mode="multi")
     need_stable = "Stabilität notwendig" in options
     low_memory = "Speicher knapp" in options
 
@@ -40,12 +40,16 @@ if file is not None:
     values = col.dropna().tolist()
 
     if null_count:
-        st.info(f"{null_count} leere Werte ignoriert und beim Sortieren ans Ende gestellt.")
+        st.info(f"{null_count} leere Werte wurden entfernt und nicht mit analysiert.")
+
+    # Datei und Spalte gemeinsam merken, damit eine neue Datei mit
+    # gleichem Spaltennamen nicht ohne Klick analysiert wird
+    key = (file.name, file.size, column)
 
     if st.button("Analyse starten", type="primary", icon=":material/play_arrow:"):
-        st.session_state.analyzed_column = column
+        st.session_state.analyzed = key
 
-    if st.session_state.get("analyzed_column") == column:
+    if st.session_state.get("analyzed") == key:
         with st.spinner("Analyse läuft..."):
             features = analyze(values)
         st.success("Analyse abgeschlossen!")
@@ -115,4 +119,3 @@ if file is not None:
             st.write(f"Am schnellsten: **{fastest}** ({results[fastest]:.1f} ms)")
             if skipped:
                 st.caption(f"{', '.join(skipped)} übersprungen: bei mehr als 5.000 Werten zu langsam (O(n²)).")
-   

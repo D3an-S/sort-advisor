@@ -45,8 +45,8 @@ def recommend(features, need_stable=False, low_memory=False):
     if not features["is_comparable"]:
         return {
             "algorithm": None,
-            "reasons": ["Die Spalte enthält gemischte Datentypen und lässt sich "
-                        "nicht sinnvoll sortieren."],
+            "reasons": ["Die Spalte enthält einen nicht unterstützten oder gemischten "
+                        "Datentyp und lässt sich nicht sinnvoll sortieren."],
             "notes": [],
         }
 
