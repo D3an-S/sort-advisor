@@ -3,3 +3,4 @@ maxUploadSize = 5
 
 [client]
 showErrorDetails = "none"
+disableDataExport = true
